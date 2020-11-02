@@ -110,25 +110,14 @@ public class MainActivity extends AppCompatActivity {
 
             File filelog = new File(getExternalFilesDir(null),
                     "log.txt");
-            FileWriter writer = null;
-            FileReader reader = null;
-            try {
-                writer = new FileWriter(filelog, true);
+            try (FileWriter writer = new FileWriter(filelog, true)){
                 writer.write("app started");
-                reader = new FileReader(filelog);
 
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    writer.close();
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            }
             }
         }
-    }
 
 //prepare List for adapter
     private List<MyData> prepareContent(String text) throws FileNotFoundException {
@@ -142,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
         }}
         else
-            Toast.makeText(MainActivity.this, "File is too short to create an item", Toast.LENGTH_LONG);
+            Toast.makeText(MainActivity.this, "File is too short to create an item", Toast.LENGTH_LONG).show();
 
         return content;
     }
