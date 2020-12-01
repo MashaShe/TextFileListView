@@ -16,7 +16,7 @@ public class MyData {
 
     @Override
     public String toString() {
-        return  header + "'\n\n'" + text + "'\n\n'" + author + "'\n\n'";
+        return header + "'\n\n'" + text + "'\n\n'" + author + "'\n\n'";
     }
 
     public String getHeader() {

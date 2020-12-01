@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_CODE_PERMISSION_WRITE_STORAGE);
+            //Intent intent = new Intent(this, MainActivity.class);
+            //startActivity(intent);
         }
 
         if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
@@ -65,8 +68,9 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_CODE_PERMISSION_WRITE_STORAGE);
+           // Intent intent = new Intent(this, MainActivity.class);
+           // startActivity(intent);
         }
-
 
         adapter = new MyAdapter(this, toadapter);
         list.setAdapter(adapter);
@@ -74,22 +78,19 @@ public class MainActivity extends AppCompatActivity {
         addBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(values.isEmpty()){
+                if (values.isEmpty()) {
                     Toast.makeText(MainActivity.this, "No new items left", Toast.LENGTH_SHORT);
-                }
-                else {
+                } else {
                     adapter.addItem(values.get(0));
                     adapter.notifyDataSetChanged();
                     values.remove(0);
                 }
             }
         });
-
     }
 
 
-
-//Load text from string to file
+    //Load text from string to file
     private void LoadText() {
         if (isExternalStorageWritable()) {
             File file = new File(Environment
@@ -98,45 +99,42 @@ public class MainActivity extends AppCompatActivity {
                     FILE_NAME);
             String myText = getString(R.string.large_text);
 
-            try {
-                if (file.length()==0){  //if file is empty we upload text from strings again. if not empty we use data we've changed last time
-                FileWriter fw = new FileWriter(file);
-                fw.write(myText);
-                fw.close();}
-
-            } catch (Exception e) {
-                System.out.println(e);
+            if (file.length() == 0) {  //if file is empty we upload text from strings again. if not empty we use data we've changed last time
+                try (FileWriter fw = new FileWriter(file)) {
+                    fw.write(myText);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
             }
 
             File filelog = new File(getExternalFilesDir(null),
                     "log.txt");
-            try (FileWriter writer = new FileWriter(filelog, true)){
+            try (FileWriter writer = new FileWriter(filelog, true)) {
                 writer.write("app started");
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            }
         }
+    }
 
-//prepare List for adapter
+    //prepare List for adapter
     private List<MyData> prepareContent(String text) throws FileNotFoundException {
         String[] largeText = text.split("\n\n");
         List<MyData> content = new ArrayList<>();
         MyData oneItem;
-        if (largeText.length>3){
-        for (int i = 0; i < largeText.length-3; i += 3) {
-            oneItem = new MyData(largeText[i], largeText[i + 1], largeText[i + 2]);
-            content.add(oneItem);
+        if (largeText.length > 3) {
+            for (int i = 0; i < largeText.length - 3; i += 3) {
+                oneItem = new MyData(largeText[i], largeText[i + 1], largeText[i + 2]);
+                content.add(oneItem);
 
-        }}
-        else
+            }
+        } else
             Toast.makeText(MainActivity.this, "File is too short to create an item", Toast.LENGTH_LONG).show();
 
         return content;
     }
 
-//read String from file
+    //read String from file
     private String readFile() throws IOException {
         String line = null;
         StringBuilder stringBuilder = new StringBuilder();
@@ -148,19 +146,15 @@ public class MainActivity extends AppCompatActivity {
                             Environment.DIRECTORY_DOCUMENTS),
                     FILE_NAME);
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            try {
-                while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line);
-                    stringBuilder.append(ls);
-                }
 
-                return stringBuilder.toString();
-            } finally {
-                reader.close();
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+                stringBuilder.append(ls);
             }
-        }
-        else {
-            Toast.makeText(MainActivity.this, "file is unavailable",Toast.LENGTH_LONG).show();
+            reader.close();
+            return stringBuilder.toString();
+        } else {
+            Toast.makeText(MainActivity.this, "file is unavailable", Toast.LENGTH_LONG).show();
         }
         return stringBuilder.toString();
     }
@@ -202,4 +196,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-   }
+}

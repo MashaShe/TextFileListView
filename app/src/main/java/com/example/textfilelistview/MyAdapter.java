@@ -80,39 +80,38 @@ public class MyAdapter extends BaseAdapter {
         title.setText(itemData.getHeader());
         subtitle.setText(itemData.getText());
         author.setText(itemData.getAuthor());
-      //  button.setTag(String.valueOf(position));
+        //  button.setTag(String.valueOf(position));
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    removeItem(position);
+                removeItem(position);
                 String line = null;
                 StringBuilder stringBuilder = new StringBuilder();
                 String ls = System.getProperty("line.separator");
 
-                for (int i = 0; i < getCount(); i++){
+                for (int i = 0; i < getCount(); i++) {
                     line = getItem(i).toString();
                     stringBuilder.append(line);
                     stringBuilder.append(ls);
                 }
 
                 String state = Environment.getExternalStorageState();
-                if (Environment.MEDIA_MOUNTED.equals(state)){
+                if (Environment.MEDIA_MOUNTED.equals(state)) {
                     File file = new File(Environment
                             .getExternalStoragePublicDirectory(
                                     Environment.DIRECTORY_DOCUMENTS),
                             "longText.txt");
 
-                    try {
-                        FileWriter fw = new FileWriter(file);
+                    try (FileWriter fw = new FileWriter(file);) {
                         fw.write(stringBuilder.toString());
-                        fw.close();
                     } catch (Exception e) {
                         System.out.println(e);
                     }
 
 
+                }
             }
-        }});
+        });
         button.setFocusable(false);
         return view;
     }
